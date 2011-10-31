@@ -33,7 +33,7 @@ uint distim (uint min_accumulated, const char * x, const char * y,
 	    uint len_x,  uint len_y, uint start_x,  uint start_y)
 {
     // If we're already over the minimum threshold, don't bother
-    if (min_accumulated > DIST_THRESHOLD) return min_accumulated;
+    if (min_accumulated > DIST_THRESHOLD) return 0;
 
     // Base cases :-)
     if (len_x - start_x == 0) return len_y - start_y;
@@ -54,7 +54,7 @@ uint distim (uint min_accumulated, const char * x, const char * y,
 	if (last_chars_matched) {
 	    return distim (min_accumulated, x, y, len_x, len_y, next_x, next_y);
 	} else {
-	    return DIST_THRESHOLD + 1; // Not being considered.
+	    return 1; // Not being considered.
 	}
     }
 
