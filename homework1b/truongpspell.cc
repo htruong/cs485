@@ -59,182 +59,6 @@ void * read_file_to_vector(void * arg)
 }
 
 /* ---------------------------------------------------------------------- */
-/*
-uint dist (string *x, string *y)
-{
-    // Find the Levenshtien distance between
-    // two strings x and y.
-    uint xlen = x->length();
-    uint ylen = y->length();
-    // Base cases: if either string is empty,
-    // the distance is the length of the other.
-    if (xlen == 0)
-    return ylen;
-    if (ylen == 0)
-    return xlen;
-    // Not one of the base cases.
-    // Divide each string into two parts.
-    // xhead = x[0 .. n-2]
-    // xtail = x[n-1 .. n-1]
-    string *xhead = new string(x->substr(0, xlen - 1));
-    string *xtail = new string(x->substr(xlen - 1, 1));
-    string *yhead = new string(y->substr(0, ylen - 1));
-    string *ytail = new string(y->substr(ylen - 1, 1));
-    // ... now, handle the three recursive cases.
-    // These represent the dist d between the heads
-    // of x and y, the dist between truncated-x
-    // and y, and the dist between x and truncated-y.
-    uint head_d, truncx_d, truncy_d;
-    // Find the distance between the string heads.
-    if (*xtail == *ytail) {
-	head_d = dist(xhead, yhead);
-    } else {
-	head_d = 1 + dist (xhead, yhead);
-    }
-    
-    // Calculate distance between x[0 .. m-2] and y.
-    truncx_d = 1 + dist (xhead, y);
-    // Calculate distance between x and y[0 .. n-2].
-    truncy_d = 1 + dist (x, yhead);
-    // Find minimum of the three cases.
-    uint min_d = head_d;
-    if (truncx_d < min_d) {
-	min_d = truncx_d;
-    }
-    
-    if (truncy_d < min_d) {
-	min_d = truncy_d;
-    }
-    // Clean up and return the minimum.
-    delete xhead, xtail, yhead, ytail;
-    
-    return min_d;
-}
-*/
-
-/*
-uint distim (string *x, string *y, uint min_accumulated)
-{
-    if (min_accumulated > DIST_THRESHOLD) return min_accumulated;
-    // Find the Levenshtien distance between
-    // two strings x and y.
-    uint xlen = x->length();
-    uint ylen = y->length();
-    // Base cases: if either string is empty,
-    // the distance is the length of the other.
-    if (xlen == 0)
-    return ylen;
-    if (ylen == 0)
-    return xlen;
-    // Not one of the base cases.
-    // Divide each string into two parts.
-    // xhead = x[0 .. n-2]
-    // xtail = x[n-1 .. n-1]
-    string *xhead = new string(x->substr(0, xlen - 1));
-    string *yhead = new string(y->substr(0, ylen - 1));
-    // ... now, handle the three recursive cases.
-    // These represent the dist d between the heads
-    // of x and y, the dist between truncated-x
-    // and y, and the dist between x and truncated-y.
-    uint head_d, truncx_d, truncy_d;
-    // Find the distance between the string heads.
-    if ((*x)[xlen-1] == (*y)[ylen-1]) {
-	head_d = distim (xhead, yhead, min_accumulated);
-    } else {
-	head_d = 1 + distim (xhead, yhead, min_accumulated + 1);
-    }
-
-    // Calculate distance between x[0 .. m-2] and y.
-    truncx_d = 1 + distim (xhead, y, min_accumulated + 1);
-    // Calculate distance between x and y[0 .. n-2].
-    truncy_d = 1 + distim (x, yhead, min_accumulated + 1);
-    // Find minimum of the three cases.
-    uint min_d = head_d;
-    if (truncx_d < min_d) {
-	min_d = truncx_d;
-    }
-
-    if (truncy_d < min_d) {
-	min_d = truncy_d;
-    }
-    // Clean up and return the minimum.
-    delete xhead;
-    delete yhead;
-
-    return min_d;
-}
-*/
-/*
-uint distim (uint min_accumulated, char * x, char * y)
-{
-    if (min_accumulated > DIST_THRESHOLD) return min_accumulated;
-    // Find the Levenshtien distance between
-    // two strings x and y.
-
-    // Base cases: if either string is empty,
-    // the distance is the length of the other.
-
-    //cout << x << "<->" << y << endl;
-
-    uint xlen = strlen(x);
-    uint ylen = strlen(y);
-
-    if (xlen == 0) return strlen(y);
-    if (ylen == 0) return strlen(x);
-    
-    // Not one of the base cases.
-    // Divide each string into two parts.
-    char * xhead = new char[xlen - 1];
-    char * yhead = new char[ylen - 1];
-    //cout << x << "<>" << y << endl;
-    
-    if (xlen > 1) {
-	strcpy(xhead, x + 1);
-    } else {
-	//xhead = NULL;
-	return strlen(y);
-    }
-    
-    if (ylen > 1) {
-	strcpy(yhead, y + 1);
-    } else {
-	//yhead = NULL;
-	return strlen(x);
-    }
-
-    //cout << xhead << ":" << yhead << endl;
-    // ... now, handle the three recursive cases.
-    // These represent the dist d between the heads
-    // of x and y, the dist between truncated-x
-    // and y, and the dist between x and truncated-y.
-    uint head_d, truncx_d, truncy_d;
-    // Find the distance between the string heads.
-    if (x[xlen-1] == y[ylen-1]) {
-	head_d = distim (min_accumulated, xhead, yhead);
-    } else {
-	head_d = 1 + distim (min_accumulated + 1, xhead, yhead);
-    }
-
-    // Calculate distance between x[0 .. m-2] and y.
-    truncx_d = 1 + distim (min_accumulated + 1, xhead, y);
-    // Calculate distance between x and y[0 .. n-2].
-    truncy_d = 1 + distim (min_accumulated + 1, x, yhead);
-    // Find minimum of the three cases.
-    uint min_d = head_d;
-    if (truncx_d < min_d) {
-	min_d = truncx_d;
-    }
-
-    if (truncy_d < min_d) {
-	min_d = truncy_d;
-    }
-    // Clean up and return the minimum.
-    delete xhead;
-    delete yhead;
-
-    return min_d;
-}
-*/
 /* Well, we actually don't care about the real Levenshtien distance
  * we only care about the Levenshtien distance if it's not over a threshold
  * 
@@ -260,16 +84,16 @@ uint distim (uint min_accumulated, const char * x, const char * y,
     uint next_x = start_x + 1;
     uint next_y = start_y + 1;
     uint next_min = min_accumulated + 1;
-
+    bool last_chars_matched = (x[len_x - next_x] == y[len_y - next_x]);
 
     // If we're "on the edge," meaning
     // min_accumulated = DIST_THRESHOLD,
-    // then the only bet is in
-    // x[len_x - start_x - 1] == y[len_y - start_y - 1]
+    // then the only bet is when the last character matched
     // otherwise, anything else is gonna make it > DIST_THRESHOLD.
 
+    
     if (min_accumulated == DIST_THRESHOLD) {
-	if (x[len_x - start_x - 1] == y[len_y - start_y - 1]) {
+	if (last_chars_matched) {
 	    return distim (min_accumulated, x, y, len_x, len_y, next_x, next_y);
 	} else {
 	    return DIST_THRESHOLD + 1; // Not being considered.
@@ -277,7 +101,7 @@ uint distim (uint min_accumulated, const char * x, const char * y,
     }
     
     // Otherwise, continue our normal business
-    if (x[len_x - start_x - 1] == y[len_y - start_y - 1]) {
+    if (last_chars_matched) {
 	head_d = distim (min_accumulated, x, y, len_x, len_y, next_x, next_y);
     } else {
 	head_d = 1 + distim (next_min, x, y, len_x, len_y, next_x, next_y);
