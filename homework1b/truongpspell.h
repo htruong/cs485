@@ -1,7 +1,7 @@
 /* Parallel Spell-checking Program
-* --------------------------
-* Written by Huan Truong <hnt7438@truman.edu>
-*/
+ * --------------------------
+ * Written by Huan Truong <hnt7438@truman.edu>
+ */
 
 
 #ifndef TRUONG_PSPELL_H
@@ -22,26 +22,27 @@ using namespace std;
 /* ---------------------------------------------------------------------- */
 // The threshold that we want to run the recursive dist algorithm
 #define DIST_THRESHOLD 2
+// As words are separated by spaces this will be OK.
 #define MARKER_END "END LOL"
 
 /* ---------------------------------------------------------------------- */
 struct read_file_to_vector_arg {
-    char * source_file;
-    vector<char *> * dest_vector;
+  char * source_file;
+  vector<char *> * dest_vector;
 };
 
 struct read_input_to_vector_arg {
-    vector<char *> * dest_vector;
-    pthread_mutex_t * words_vector_lock;
-    pthread_cond_t * words_not_empty;
+  vector<char *> * dest_vector;
+  pthread_mutex_t * words_vector_lock;
+  pthread_cond_t * words_not_empty;
 };
 
 struct spell_check_arg {
-    vector<char *> * dict_vector;
-    vector<char *> * words_vector;
-    pthread_mutex_t * words_vector_lock;
-    pthread_mutex_t * output_lock;
-    pthread_cond_t * words_not_empty;
+  vector<char *> * dict_vector;
+  vector<char *> * words_vector;
+  pthread_mutex_t * words_vector_lock;
+  pthread_mutex_t * output_lock;
+  pthread_cond_t * words_not_empty;
 };
 
 // The dict vector that we're all gonna share
@@ -60,17 +61,17 @@ pthread_cond_t * input_not_empty;
 
 /* ---------------------------------------------------------------------- */
 /* Well, we actually don't care about the real Levenshtien distance
-* we only care about the Levenshtien distance if it's not over a threshold!
-*
-* So here comes the distance IMproved function, saves a bunch of function calls
-*
-* WARNING: This distim doesn't actually return the Levenshtien dist,
-* it returns the value which guarantees real_levenshtien_dist > distim
-* When DIST_THRESHOLD = infinity, then real_levenshtien_dist = distim.
-*/
+ * we only care about the Levenshtien distance if it's not over a threshold!
+ *
+ * So here comes the distance IMproved function, saves a bunch of function calls
+ *
+ * WARNING: This distim doesn't actually return the Levenshtien dist,
+ * it returns the value which guarantees real_levenshtien_dist > distim
+ * When DIST_THRESHOLD = infinity, then real_levenshtien_dist = distim.
+ */
 
 uint distim (uint min_accumulated, const char * x, const char * y,
-	    uint len_x,  uint len_y, uint start_x,  uint start_y);
+             uint len_x,  uint len_y, uint start_x,  uint start_y);
 
 /* Find a needle in a haystack, return -1 if not found */
 int find_in_vector(char * needle, vector<char *> * haystack);
