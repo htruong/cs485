@@ -24,6 +24,10 @@ uint distim (int threshold, uint acc,
             const char * x, const char * y, uint len_x,  uint len_y, 
             uint start_x,  uint start_y)
 {
+  // acc is the accumulated distance when we're going that road down.
+  // It is a hack so that we can prune long words that are way over the 
+  // threshold.
+
   // Base cases :-)
   if (len_x - start_x == 0) return len_y - start_y;
   if (len_y - start_y == 0) return len_x - start_x;
@@ -126,6 +130,8 @@ void * read_input_to_vector(void * arg)
   // the input seems to be buffered line by line
   // Also it will eat one \n for no apparent reason, you'll have to press
   // enter twice. Doesn't happen if you do echo -e and pipe?
+  // I assume here you terminate the input with ^D / EOL
+
   while (cin.good()) {
     cin.get(c);
     if (c == ' ' || c == ',' ||  c == '.' || c == '\n' /* et cetera */) {
@@ -198,8 +204,13 @@ void * spell_check(void * arg)
                             strlen(word), strlen((*dict_vector)[j]), 0, 0);
 	
         if (_dist == min_dist_found) {
+          // we found a canidate word that is equally good compared
+          // to the best suggestion we have found.
           suggestions.push_back((*dict_vector)[j]);
         } else if (min_dist_found == -1 || _dist < min_dist_found) {
+          // we have found a better word
+          // better set the threshold higher, so that we can prune even more
+
           min_dist_found = _dist;
           suggestions.clear();
           suggestions.push_back((*dict_vector)[j]);
