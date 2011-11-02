@@ -20,8 +20,6 @@
 using namespace std;
 
 /* ---------------------------------------------------------------------- */
-// The threshold that we want to run the recursive dist algorithm
-#define DIST_THRESHOLD 2
 // As words are separated by spaces this will be OK.
 #define MARKER_END "END LOL"
 
@@ -60,18 +58,19 @@ pthread_mutex_t * io_lock;
 pthread_cond_t * input_not_empty;
 
 /* ---------------------------------------------------------------------- */
-/* Well, we actually don't care about the real Levenshtien distance
- * we only care about the Levenshtien distance if it's not over a threshold!
+/* This calculates the Levenshtien distance if it's not over a threshold!
  *
  * So here comes the distance IMproved function, saves a bunch of function calls
  *
- * WARNING: This distim doesn't actually return the Levenshtien dist,
- * it returns the value which guarantees real_levenshtien_dist > distim
- * When DIST_THRESHOLD = infinity, then real_levenshtien_dist = distim.
+ * It returns the value which guarantees real_levenshtien_dist > distim(threshold)
+ * When threshold = -1, then real_levenshtien_dist = distim.
+ *
+ * Call with acc = 0, start_x = 0, start_y = 0, they are used for recursive calls.
  */
 
-uint distim (uint min_accumulated, const char * x, const char * y,
-             uint len_x,  uint len_y, uint start_x,  uint start_y);
+uint distim (int threshold, uint acc,
+            const char * x, const char * y, uint len_x,  uint len_y,
+            uint start_x,  uint start_y);
 
 /* Find a needle in a haystack, return -1 if not found */
 int find_in_vector(char * needle, vector<char *> * haystack);

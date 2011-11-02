@@ -20,12 +20,10 @@ using namespace std;
 
 /* ---------------------------------------------------------------------- */
 
-uint distim (uint min_accumulated, const char * x, const char * y,
-            uint len_x,  uint len_y, uint start_x,  uint start_y)
+uint distim (int threshold, uint acc, 
+            const char * x, const char * y, uint len_x,  uint len_y, 
+            uint start_x,  uint start_y)
 {
-  // If we're already over the minimum threshold, don't bother
-  if (min_accumulated > DIST_THRESHOLD) return 0;
-
   // Base cases :-)
   if (len_x - start_x == 0) return len_y - start_y;
   if (len_y - start_y == 0) return len_x - start_x;
@@ -34,16 +32,16 @@ uint distim (uint min_accumulated, const char * x, const char * y,
   uint head_d, truncx_d, truncy_d;
   uint next_x = start_x + 1;
   uint next_y = start_y + 1;
-  uint next_min = min_accumulated + 1;
+  uint next_min = acc + 1;
 
   uint last_chars_matched = (x[len_x - next_x] == y[len_y - next_y]);
 
-  // When we're "on the edge" of going over the DIST_THRESHOLD,
+  // When we're "on the edge" of going over the threshold,
   // the only bet is when last_chars_matched
-  // otherwise, anything else is gonna make the distance > DIST_THRESHOLD.
-  if (min_accumulated == DIST_THRESHOLD) {
+  // otherwise, anything else is gonna make the distance > threashold.
+  if (acc == threshold && threshold != -1) {
     if (last_chars_matched) {
-      return distim (min_accumulated, x, y, len_x, len_y, next_x, next_y);
+      return distim (threshold, acc, x, y, len_x, len_y, next_x, next_y);
     } else {
       return 1; // Not being considered.
     }
@@ -51,15 +49,15 @@ uint distim (uint min_accumulated, const char * x, const char * y,
 
   // If we're okay, then continue our normal business
   if (last_chars_matched) {
-    head_d = distim (min_accumulated, x, y, len_x, len_y, next_x, next_y);
+    head_d = distim (threshold, acc, x, y, len_x, len_y, next_x, next_y);
   } else {
-    head_d = 1 + distim (next_min, x, y, len_x, len_y, next_x, next_y);
+    head_d = 1 + distim (threshold, next_min, x, y, len_x, len_y, next_x, next_y);
   }
 
   // Calculate distance between x[0 .. m-2] and y.
-  truncx_d = 1 + distim (next_min, x, y, len_x, len_y, next_x, start_y);
+  truncx_d = 1 + distim (threshold, next_min, x, y, len_x, len_y, next_x, start_y);
   // Calculate distance between x and y[0 .. n-2].
-  truncy_d = 1 + distim (next_min, x, y, len_x, len_y, start_x, next_y);
+  truncy_d = 1 + distim (threshold, next_min, x, y, len_x, len_y, start_x, next_y);
 
   // Find minimum of the three cases.
   uint min_d = head_d;
@@ -194,13 +192,18 @@ void * spell_check(void * arg)
     vector<char *> suggestions;
 
     if (!in_dict) {
+      int min_dist_found = -1;
       for (uint j=0; j < dict_vector->size(); j++) {
-        uint _dist = distim(0, word, (*dict_vector)[j],
+        uint _dist = distim(min_dist_found, 0, word, (*dict_vector)[j],
                             strlen(word), strlen((*dict_vector)[j]), 0, 0);
-
-        if (_dist <= DIST_THRESHOLD) {
+	
+        if (_dist == min_dist_found) {
           suggestions.push_back((*dict_vector)[j]);
-        }
+        } else if (min_dist_found == -1 || _dist < min_dist_found) {
+          min_dist_found = _dist;
+          suggestions.clear();
+          suggestions.push_back((*dict_vector)[j]);
+	}
       }
     }
 
