@@ -4,7 +4,7 @@
   */
 
 package PQSort;
-  
+
 public class TruongPQSort {
   /**
     * Parallel-Quick Sort Java Implementation
@@ -23,15 +23,15 @@ public class TruongPQSort {
     }
 
     TPSortThread sThread = new TPSortThread("ChuckNorris", 0, l.size() - 1, l);
-    
+
     sThread.start();
-    
+
     try {
       sThread.join();
     } catch (Throwable e) {
       System.out.println ("Couldn't join with thread " + sThread.getName());
     }
-    
+
     l.printList();
   }
 }

@@ -13,8 +13,11 @@ public class TPSortThread extends Thread {
   private SwappableList list;
 
   /** Construct and initialize a thread.
-  /* @param name The name given to this thread
-  */
+    * @param name The name given to this thread
+    * @param begin Left boundary of the list
+    * @param end Right boundary of the list
+    * @param sList The swappable list
+    */
   public TPSortThread (String name, int begin, int end, SwappableList sList) {
     setName (name);
     start = begin;
@@ -22,8 +25,10 @@ public class TPSortThread extends Thread {
     list = sList;
   }
 
-  /** Begin execution of a TPSortThread.
-  */
+  /**
+    * Begin execution of a TPSortThread.
+    * Quicksorts the list.
+    */
   public void run() {
     int left, right, pivot;
 
